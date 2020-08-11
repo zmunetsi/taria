@@ -10,11 +10,10 @@ router.get('/rooms', (req, res, next) => {
   var roomcapacity = req.query.roomcapacity;
   var roomname = req.query.roomname;
   var host = req.query.host;
+  var userid = req.query.userid;
   var roomid;
 
-  console.log(host);
-
-  if(host){
+  if(host === "true" ){
    
     roomid = uuidv4();
 
@@ -23,8 +22,18 @@ router.get('/rooms', (req, res, next) => {
     roomid = req.query.roomid;   
 
   }
+ 
+  if(req.isAuthenticated()){
+    
+    res.render('room', {isAuthenticated: true, userName: username, userId: userid, roomid : roomid, roomcapacity: roomcapacity, roomname: roomname, host: host});
 
-    res.render('room', {username: username, roomid : roomid, roomcapacity: roomcapacity, roomname: roomname, host: host});
+  }
+  else{
+    
+    res.render('index', {isAuthenticated: false,userName: username,userId: userid, roomid : roomid, roomcapacity: roomcapacity, roomname: roomname, host: host});
+
+  }
+
 
   });
 

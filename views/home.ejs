@@ -11,6 +11,8 @@
       <h3>Create Room</h3>
       <form id = "create-room" action = "/rooms" method = "GET" class="col s12">
         <input type="hidden" name="username" value = "<%= userName %>" />
+        <input type="hidden" name="userid" value = "<%= userId %>" />
+        
         <input type="hidden" name="host" value = "true" />
       
         
@@ -36,6 +38,7 @@
         <h3>Already have an room id?</h3>
         <form class = "joinroom" action = "/rooms" method = "GET" class="col s12">
           <input type="hidden" name="username" value = "<%= userName %>" />
+          <input type="hidden" name="userid" value = "<%= userId %>" />
           <input type="hidden" name="host" value = "false" />
           
           <div class="input-field col s12">

@@ -3,7 +3,8 @@
   <%- include('./layouts/header'); -%>
 
 
-  <script>var username = "<%=username; %>" </script>
+  <script>var username = "<%=userName; %>" </script>
+  <script>var userid = "<%=userId; %>" </script>
   <script>var ROOM_ID= "<%= roomid; %>" </script>
   <script>var roomcapacity = "<%= roomcapacity; %>" </script>
   <script>var roomname = "<%= roomname; %>" </script>
@@ -39,19 +40,23 @@
                         <div class="form-group">
                             <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
                             <div class="col-lg-10">
-                                <form class = "join-room" action = "/rooms" method = "GET" class="col s12">
-                                    <input type="hidden" name="username" value = "<%= username %>" />
+                              <form class = "joinroom" action = "/rooms" method = "GET" class="col s12">
+                                    <input type="hidden" name="username" value = "<%= userName %>" />
+                                    <input type="hidden" name="userid" value = "<%= userId %>" />
                                     <input type="hidden" name="host" value = "false" />
                                     
                                     <div class="input-field col s12">
-                                        
-                                        <input id="roomid" type="text" name = "roomid" class="validate" required />
-                                        <label for="roomid">Room Id</label>
-                                        
+                                      
+                                      <input id="roomid" type="text" name = "roomid" class="validate" required />
+                                      <label for="roomid">Room Id</label>
+                                      
                                     </div>
 
-                                    <button id="joinRoomBtn" type="submit" class="btn btn-primary">Connect to Peer</button>
-
+                            
+                                    <button id = "joinRoomBtn" class="green btn waves-effect waves-green btn-flat" type="submit">Enter Room
+                                    </button>
+                            
+                            
                                 </form>
 
                             </div>
