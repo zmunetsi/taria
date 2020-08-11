@@ -1,61 +1,22 @@
-<%- include('./layouts/header'); -%>
-
-var username = <%-username %> 
-
-<script src="https://unpkg.com/peer-id/dist/index.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
-<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<!-- peer js setup -->
-
-
-<script>
-
-
-
-
-var peer = new Peer({
-
-
-});
-
-// Show the ID that allows other user to connect to your session.
-peer.on('open', function () {
-  peer_id = peer.id;
-  $('input[name = "roomid"]').val( peer_id);
-
-
   
 
-    
-});
-
-</script>
+  <%- include('./layouts/header'); -%>
 
 
+  <script>var username = "<%=username; %>" </script>
+  <script>var roomid = "<%= roomid; %>" </script>
+  <script>var roomcapacity = "<%= roomcapacity; %>" </script>
+  <script>var roomname = "<%= roomname; %>" </script>
+  <script>var host = "<%= host; %>" </script>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" ></script>
 
-    <div class="container">
+  <div class="container">
         <div class="row">
-            <div class="col s12 m6">
-                <!-- 
-                    Display video of the current user
-                    Note: mute your own video, otherwise you'll hear yourself ...
-                 -->
-                <div class="text-center">
-                    <video id="my-camera"  width="300" height="300" autoplay="autoplay" muted="true" class="mx-auto d-block"></video>
-                    <span class="black-text label label-info">You</span>
-                </div>
-            </div>
-
-            <div class="col s12 m6">
-                <!-- Display video of the connected peer -->
-                <div class="text-center">
-                    <video id="peer-camera" width="300" height="300" autoplay="autoplay" class="mx-auto d-block"></video>
-                    <span class="black-textlabel label-info" id="connected_peer"></span>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
+          <div id="video-grid"></div>
+      </div>
+      <div class="row">
           <div class="col s12 m6">
             <h2 class="grey-text text-center">
               Share the following ID with the pal that wants to talk with you
@@ -82,10 +43,11 @@ peer.on('open', function () {
 
                                 <!-- Show message if someone connected to the client -->
                                 <div id="connected_peer_container" class="hidden">
-                                    An user is already connected to your session. Just provide a name to connect !
+                                    A user is already connected to your session. Just provide enter an id to connect !
                                 </div>
                             </div>
                         </div>
+                        <br/>
                         <div class="form-group">
                             <div class="col-lg-10 col-lg-offset-2">
                                 <button id="connect-to-peer-btn" class="btn btn-primary">Connect to Peer</button>
@@ -94,28 +56,71 @@ peer.on('open', function () {
                     </fieldset>
                 </div>
             </div>
-            <!-- <div class="col-md-12 col-lg-12">
-                <div id="chat" class="hidden">
-                    <div id="messages-container">
-                        <div class="list-group" id="messages"></div>
-                    </div>
-                    <div id="message-container">
-                        <div class="form-group">
-                            <label class="control-label">Live chat</label>
-                            <div class="input-group">
-                                <span class="input-group-btn">
-                                    <button id="call" class="btn btn-info">Call</button>
-                                </span>
-                                <input type="text" class="form-control" name="message" id="message" placeholder="Your messag here ...">
-                                <span class="input-group-btn">
-                                    <button id="send-message" class="btn btn-success">Send Message</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
+ 
         </div>
-    </div>
+        
+  </div>
 
-    <%- include('./layouts/footer'); -%>
+  <script>
+
+    var socket = io('/')
+    var videoGrid = document.getElementById('video-grid')
+    var myPeer = new Peer(undefined, {
+    host: '/',
+    port: '3001'
+    })
+
+    var myVideo = document.createElement('video')
+    myVideo.muted = true
+    const peers = {}
+    navigator.mediaDevices.getUserMedia({
+    video: true,
+    audio: true
+    }).then(stream => {
+    addVideoStream(myVideo, stream)
+
+    myPeer.on('call', call => {
+        call.answer(stream)
+        const video = document.createElement('video')
+        call.on('stream', userVideoStream => {
+        addVideoStream(video, userVideoStream)
+        })
+    })
+
+  socket.on('user-connected', userId => {
+    connectToNewUser(userId, stream)
+  })
+})
+
+socket.on('user-disconnected', userId => {
+  if (peers[userId]) peers[userId].close()
+})
+
+myPeer.on('open', id => {
+  socket.emit('join-room', ROOM_ID, id)
+})
+
+function connectToNewUser(userId, stream) {
+  const call = myPeer.call(userId, stream)
+  const video = document.createElement('video')
+  call.on('stream', userVideoStream => {
+    addVideoStream(video, userVideoStream)
+  })
+  call.on('close', () => {
+    video.remove()
+  })
+
+  peers[userId] = call
+}
+
+function addVideoStream(video, stream) {
+  video.srcObject = stream
+  video.addEventListener('loadedmetadata', () => {
+    video.play()
+  })
+  videoGrid.append(video)
+}
+
+  </script>
+
+<%- include('./layouts/footer'); -%>
