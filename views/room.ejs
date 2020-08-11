@@ -12,7 +12,7 @@
   <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js" ></script>
 
-  <div class="container">
+  <div class="container mt-40">
         <div class="row">
           <div id="video-grid"></div>
       </div>
@@ -39,26 +39,31 @@
                         <div class="form-group">
                             <label for="peer_id" class="col-lg-2 control-label">Peer ID (id of your pal)</label>
                             <div class="col-lg-10">
-                                <input type="text" class="form-control" name="peer_id" id="peer_id" placeholder="Peer ID" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                                <form class = "join-room" action = "/rooms" method = "GET" class="col s12">
+                                    <input type="hidden" name="username" value = "<%= username %>" />
+                                    <input type="hidden" name="host" value = "false" />
+                                    
+                                    <div class="input-field col s12">
+                                        
+                                        <input id="roomid" type="text" name = "roomid" class="validate" required />
+                                        <label for="roomid">Room Id</label>
+                                        
+                                    </div>
 
-                                <!-- Show message if someone connected to the client -->
-                                <div id="connected_peer_container" class="hidden">
-                                    A user is already connected to your session. Just provide enter an id to connect !
-                                </div>
+                                    <button id="joinRoomBtn" type="submit" class="btn btn-primary">Connect to Peer</button>
+
+                                </form>
+
                             </div>
                         </div>
                         <br/>
-                        <div class="form-group">
-                            <div class="col-lg-10 col-lg-offset-2">
-                                <button id="connect-to-peer-btn" class="btn btn-primary">Connect to Peer</button>
-                            </div>
-                        </div>
+                     
                     </fieldset>
                 </div>
             </div>
  
         </div>
-        
+
   </div>
 
   <script>
