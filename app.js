@@ -11,8 +11,6 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var methodOverride = require("method-override");
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
 
 var app = express();
 var User = require('./models/user');
@@ -93,16 +91,6 @@ passport.deserializeUser((id, done) => {
   });
 });
 
-io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId)
-    socket.to(roomId).broadcast.emit('user-connected', userId)
-
-    socket.on('disconnect', () => {
-      socket.to(roomId).broadcast.emit('user-disconnected', userId)
-    })
-  })
-})
 
 // 
 app.use(express.static(__dirname + '/node_modules/materialize-css/dist/'));
