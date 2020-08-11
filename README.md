@@ -4,4 +4,4 @@ This is a video conferencing project build with Express Js, Mongo DB and Peer Js
 To test project.
 -Clone the Repo
 -npm install
--And you a good.
+-And you are good.
