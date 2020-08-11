@@ -13,6 +13,7 @@ $('.slide-wrapper').slick({
   });
 
     $('.modal').modal();
+    $('.sidenav').sidenav();
  
 
 })
