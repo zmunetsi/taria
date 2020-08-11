@@ -5,11 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var{ body, validationResult } = require('express-validator');
-var flash = require('connect-flash');
 var session = require('express-session');
+var flash = require('connect-flash');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
+var methodOverride = require("method-override");
 
 var app = express();
 var User = require('./models/user');
@@ -29,34 +30,31 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
-
+app.use(bodyParser.urlencoded())
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.json());
 
 // Express Session
-app.use(session({ cookie: { maxAge: 60000 }, 
-  secret: 'woot',
-  resave: false, 
-  saveUninitialized: false}));
+  app.use(session({
+    secret: 'super secret key',
+    resave: true,
+    cookie: { maxAge: 8*60*60*1000 },  // 8 hours
+    saveUninitialized: true,
+    //store: new MongoStore({ mongooseConnection: mongoose.connection })
+    }));
 
-//// Express messages
-app.use(flash());
-app.use((req, res, next) => {
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  res.locals.user = req.user || null;
-  next();
-});
+    
 
-// 
 // Init passport
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(require('connect-flash')());
+app.use(function (req, res, next) {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
 
 // Local Strategy
 passport.use(new LocalStrategy((username, password, done) => {
@@ -75,11 +73,8 @@ passport.use(new LocalStrategy((username, password, done) => {
     User.comparePassword(password, user.password, (err, isMatch) => {
       if(err) throw err;
       if(isMatch){
-        console.log('matched');
         return done(null, user);
       } else {
-
-        console.log('no match');
         return done(null, false, {message: 'Wrong Password'});
       }
     });
@@ -104,8 +99,17 @@ app.use(express.static(__dirname + '/node_modules/materialize-css/dist/'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use(require('./routes'));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
 
+
+app.use(require('./routes'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

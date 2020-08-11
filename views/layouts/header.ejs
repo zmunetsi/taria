@@ -3,7 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
-  <title>Starter Template - Materialize</title>
+  <title>Videotech</title>
 
   <!-- CSS  -->
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -16,13 +16,19 @@
   <% if (locals.isAuthenticated) { %>
 
     <nav class="" role="navigation">
-      <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Videome</a>
+      <div class="nav-wrapper container"><a id="logo-container" href="/" class="brand-logo">Videome</a>
         <ul class="right hide-on-med-and-down">
-          <li><a class="" href="/logout">Logout</a></li>
+          <li><a  class="modal-trigger" href="#editmodal">Welcome <%= userName %></a></li>
+          <li><a  class="modal-trigger" href="#editmodal">Edit Profile</a></li>
+          <li><a  class="modal-trigger" href="#deletemodal">Delete Profile</a></li>
+          <li><a class =""  href="/logout">Logout</a></li>
           
         </ul>
   
         <ul id="nav-mobile" class="sidenav">
+          <li><a  class="modal-trigger" href="#editmodal">Welcome <%= userName %></a></li>
+          <li><a  class="modal-trigger" href="#editmodal">Edit Profile</a></li>
+          <li><a class="modal-trigger" href="#deletemodal">Delete Profile</a></li>
           <li><a class =""  href="/logout">Logout</a></li>
          
           
@@ -30,11 +36,66 @@
         <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       </div>
     </nav>
+     <!-- Edit Profile Modal -->
+     <div id="editmodal" class="modal">
+      <div class="modal-content">
+        <h4>Edit Profile</h4>
+        <div class="row">
+          <form action = "/users/<%= userId %>" method = "post" enctype="application/x-www-form-urlencoded" class="col s12">
+
+            <input type="hidden" name="_method" value="PUT">
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="username" type="text" name = "username" disabled value = "<%= userName %>" required class="validate">
+                <label for="username">Username</label>
+              </div>
+              <div class="input-field col s12">
+                <input id="phone" type="text" name = "phone"  class="validate">
+                <label for="phone">Phone</label>
+              </div>
+              <div class="input-field col s12">
+                <input id="password" type="password" name = "password" required class="validate">
+                <label for="password">Password</label>
+              </div>
+              <div class="input-field col s12">
+                <input id="password-confirm" type="password" name = "password_confirm" required class="validate">
+                <label for="password-confirm">Confirm password</label>
+              </div>
+              
+                <button class="btn waves-effect waves-green btn-flat" type="submit">Submit
+                </button>
+              
+            </div>
+          </form>
+        </div>
+      </div>
+      
+    </div>
+  <!--Delete Profile -->
+  <div id="deletemodal" class="modal">
+    <div class="modal-content">
+      <h4>Are you sure?</h4>
+      <div class="row">
+        <form action = "/users/<%= userId %>" method = "post" enctype="application/x-www-form-urlencoded" class="col s12">
+
+          <input type="hidden" name="_method" value="DELETE">
+          <div class="row">
+      
+              <button class="btn waves-effect waves-green btn-flat" type="submit">Yes
+              </button>
+            
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  </div>
+
 
     <% }else{%>  
 
       <nav class="" role="navigation">
-        <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Videome</a>
+        <div class="nav-wrapper container"><a id="logo-container" href="/" class="brand-logo">Videome</a>
           <ul class="right hide-on-med-and-down">
             <li><a class="modal-trigger" href="#loginmodal">Login</a></li>
             <li><a class="modal-trigger" href="#registermodal">Register</a></li>
@@ -49,7 +110,87 @@
         </div>
       </nav>
 
+            <!-- Login Modal -->
+<div id="loginmodal" class="modal">
+  <div class="modal-content">
+    <h4>Login</h4>
+    <div class="row">
+      <form action = "/login" method = "post" class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="username" type="text" name = "username" required class="validate">
+            <label for="username">Username</label>
+            
+          </div>
+          <div class="input-field col s12">
+            <input id="password" type="password" name = "password" required class="validate">
+            <label for="password">Password</label>
+          </div>
+
+          <button class="green btn waves-effect waves-green btn-flat" type="submit">Submit
+          </button>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+  <!-- Register Modal -->
+  <div id="registermodal" class="modal">
+    <div class="modal-content">
+      <h4>Register</h4>
+      <div class="row">
+        <form action = "/register" method = "post" class="col s12">
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="username" type="text" name = "username" required class="validate">
+              <label for="username">Username</label>
+            </div>
+            <div class="input-field col s12">
+              <input id="phone" type="text" name = "phone" class="validate">
+              <label for="phone">Phone</label>
+            </div>
+            <div class="input-field col s12">
+              <input id="password" type="password" name = "password" required class="validate">
+              <label for="password">Password</label>
+            </div>
+            <div class="input-field col s12">
+              <input id="password-confirm" type="password" name = "password_confirm" required class="validate">
+              <label for="password-confirm">Confirm password</label>
+            </div>
+            
+              <button class="btn waves-effect waves-green btn-flat" type="submit">Submit
+              </button>
+            
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  </div>
+
+
+
       <% } %> 
+
+      <div class="container">
+
+        <% if(locals.errors) {%>
+
+          <% var errors = locals.errors; %>
+        <% errors.forEach(function(error){ %>
+          <div class="msg msg-error"><%= error.msg %></div>
+        <% }); %>
+
+        <% } %>
+         
+        <%- messages() %>
+        
+
+ 
+      </div>
 
 
 

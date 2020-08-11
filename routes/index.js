@@ -1,26 +1,41 @@
 var express = require('express');
 var router = express.Router();
+var app    = express();
 var passport = require('passport');
-const { authenticate } = require('passport');
+var { authenticate } = require('passport');
 
 var isLoggedIn = false;
 
-/* GET landing page. */
+router.use( require('./users'));
+router.use( require('./rooms'));
+
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'landing' });
+
+  if(req.isAuthenticated()){
+    res.render('index', {isAuthenticated: true});
+
+  }else{
+
+    res.render('index', {isAuthenticated: false});
+  }
+
 });
 
-/* GET home page. */
-// router.get('/home', 
-//   passport.authenticate('local', { failureRedirect: '/' }),
-//   function(req, res) {
-//     res.redirect('/home');
-//   });
 
   router.get('/home', ensureAuthenticated, (req, res, next) => {
 
     if(req.isAuthenticated()){
-      res.render('home', {isAuthenticated: true});
+
+      try {
+
+        var userId = req.query.id;
+        var userName = req.query.username;
+        
+      } catch (error) {
+        console.log(error);
+      }
+      
+      res.render('home', {isAuthenticated: true, userId : userId, userName: userName});
 
     }else{
 
@@ -29,12 +44,8 @@ router.get('/', function(req, res, next) {
    
   });
 
-
-/* login */
 router.post('/login',require('./auth'));
-/* register*/
 router.post('/register',require('./auth'));
-// Logout
 router.get('/logout', (req, res, next) => {
   req.logout();
   req.flash('success_msg', 'You are logged out');
@@ -42,8 +53,6 @@ router.get('/logout', (req, res, next) => {
 });
 
 
-
-// Access Control
 function ensureAuthenticated(req, res, next){
   if(req.isAuthenticated()){
     return next();
@@ -52,7 +61,5 @@ function ensureAuthenticated(req, res, next){
     res.redirect('/');
   }
 }
-
-
 
 module.exports = router;

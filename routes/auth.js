@@ -6,14 +6,19 @@ var passport = require('passport')
 var { body, validationResult } = require('express-validator');
 
 /* login*/
-// Login Processing
-router.post('/login', (req, res, next) => {
-  passport.authenticate('local', {
-    successRedirect:'/home',
-    failureRedirect:'/',
-    failureFlash: true
+router.post('/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { 
+      req.flash("error", "Login failed, please try again.");
+      return res.redirect('/'); }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.redirect('/home' + '?id=' + user.id+ '&username=' +user.username);
+    });
   })(req, res, next);
 });
+
 
 /* register */
 router.post('/register', [
@@ -36,7 +41,6 @@ router.post('/register', [
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-   /// return res.status(400).json({ errors: errors.array() });
     res.render('home', { errors: errors.array()  });
 
 
@@ -52,7 +56,7 @@ router.post('/register', [
 
     User.registerUser(newUser, (err, user) => {
       if(err) throw err;
-      req.flash('success_msg', 'You are registered and can log in');
+      req.flash("info", "You are successfully registered, Plese log in.");
       res.redirect('/');
     });
 
